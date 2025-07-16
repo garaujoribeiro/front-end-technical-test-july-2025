@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
+import GlobalProvider from "@/providers/global-provider";
 
 const roboto = Roboto({
   variable: "--font-geist-sans",
@@ -31,7 +32,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <GlobalProvider>{children}</GlobalProvider>
         </ThemeProvider>
       </body>
     </html>

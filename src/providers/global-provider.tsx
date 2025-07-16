@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 const queryClient = new QueryClient()
 
-export default function Provider({ children }: { children: ReactNode }) {
+export default function GlobalProvider({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
