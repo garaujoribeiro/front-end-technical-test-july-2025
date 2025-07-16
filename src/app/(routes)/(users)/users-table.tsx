@@ -26,6 +26,7 @@ import { User } from "@/services/user/user-types";
 import { useQuery } from "@tanstack/react-query";
 import { usersQueryKeys } from "@/queries/users-queries";
 import { getAllUsers } from "@/services/user/user-service";
+import AddUserDialog from "./dialogs/add-user-dialog";
 
 export function UsersDataTable({ initialData }: { initialData: User[] }) {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -71,6 +72,10 @@ export function UsersDataTable({ initialData }: { initialData: User[] }) {
           }
           className="max-w-sm"
         />
+
+        <div className="ml-4">
+          <AddUserDialog />
+        </div>
       </div>
 
       <div className="rounded-md border">

@@ -12,7 +12,7 @@ export default function GlobalProvider({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
-      <Toaster />
+      <Toaster richColors />
       {children}
     </QueryClientProvider>
   );
