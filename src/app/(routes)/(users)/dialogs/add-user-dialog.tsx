@@ -34,6 +34,7 @@ import {
 import { usersQueryKeys } from "@/queries/users-queries";
 import { getErrorMessage } from "@/utils/get-error-message";
 import { useState } from "react";
+import { User } from "@/services/user/user-types";
 
 export default function AddUserDialog() {
   const [open, setOpen] = useState(false);
@@ -69,7 +70,7 @@ export default function AddUserDialog() {
     onSuccess(response: { data: CreateUserSchema }) {
       queryClient.setQueryData(
         usersQueryKeys.list(),
-        (oldData: CreateUserSchema[]) => {
+        (oldData: User[]) => {
           return [
             ...oldData ?? [],
             // O objeto está dessa forma para simular a estrutura de dados que o backend retornaria
