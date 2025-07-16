@@ -66,6 +66,7 @@ export default function DeleteUserDialog({
         </DialogHeader>
 
         <form
+        className="space-y-4"
           onSubmit={(e) => {
             e.preventDefault();
             mutation.mutate();
