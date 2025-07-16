@@ -49,7 +49,6 @@ export default function EditUserDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  console.log(id, name, email, cidade);
   const form = useForm<EditUserSchema>({
     resolver: zodResolver(createUserSchema),
     defaultValues: {
