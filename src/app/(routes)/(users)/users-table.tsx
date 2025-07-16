@@ -27,6 +27,15 @@ import { useQuery } from "@tanstack/react-query";
 import { usersQueryKeys } from "@/queries/users-queries";
 import { getAllUsers } from "@/services/user/user-service";
 import AddUserDialog from "./dialogs/add-user-dialog";
+import {
+  closeModalAction,
+  ModalType,
+  UserDialogProvider,
+  useUserDialogDispatch,
+  useUserDialogState,
+} from "./dialogs/user-dialog-context";
+import EditUserDialog from "./dialogs/edit-user-dialog";
+import DeleteUserDialog from "./dialogs/delete-user-dialog";
 
 export function UsersDataTable({ initialData }: { initialData: User[] }) {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -108,14 +117,28 @@ export function UsersDataTable({ initialData }: { initialData: User[] }) {
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    if (cell.id.includes("actions")) {
+                      return (
+                        <UserDialogProvider key={cell.id}>
+                          <TableCell>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        </UserDialogProvider>
+                      );
+                    }
+                    return (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))
             ) : (
