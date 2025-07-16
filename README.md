@@ -29,8 +29,7 @@ Pra conferir o projeto rodando na vercel, basta clicar [aqui](https://front-end-
 ## 🚀 Como Executar
 
 ### Pré-requisitos
-- **Docker** e **Docker Compose** instalados
-- **Node.js 18+** (para desenvolvimento local)
+- **Node.js 20+** (para desenvolvimento local)
 
 ### 1. Clone o repositório
 ```bash
