@@ -1,4 +1,4 @@
-import { LucideIcon, User } from "lucide-react";
+import { LucideIcon, User, UserLock } from "lucide-react";
 
 export interface SidebarOption {
   title: string;
@@ -11,5 +11,10 @@ export const sidebarOptions: SidebarOption[] = [
     title: "Usuários",
     url: "/",
     icon: User,
+  },
+  {
+    title: "Usuários com Erro",
+    url: "/users-error",
+    icon: UserLock,
   },
 ];

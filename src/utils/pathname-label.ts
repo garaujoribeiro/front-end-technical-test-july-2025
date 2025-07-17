@@ -1,11 +1,11 @@
 /**
  * Converte um pathname em um rótulo legível para propósitos de navegação ou exibição.
- * 
+ *
  * @param pathname - A string do pathname a ser convertida em rótulo. Deve ser uma string não vazia.
  * @returns Um rótulo localizado correspondente ao pathname fornecido.
- * 
+ *
  * @throws {Error} Lança um erro se o pathname não for uma string ou estiver vazio.
- * 
+ *
  * @example
  * ```typescript
  * pathnameLabel("/"); // Retorna "Usuários"
@@ -20,7 +20,9 @@ export const pathnameLabel = (pathname: string | null): string => {
   }
   switch (pathname) {
     case "/":
-      return "Usuários";
+      return "Listagem de Usuários";
+    case "/users-error":
+      return "Listagem de Usuários com Erro";
     default:
       return "Página em construção";
   }

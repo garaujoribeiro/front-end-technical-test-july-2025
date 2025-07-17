@@ -7,19 +7,18 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
 import { usersTableColumns } from "./users-table-columns";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
+  TablePagination,
   TableRow,
 } from "@/components/ui/table";
 import { User } from "@/services/user/user-types";
@@ -27,48 +26,60 @@ import { useQuery } from "@tanstack/react-query";
 import { usersQueryKeys } from "@/queries/users-queries";
 import { getAllUsers } from "@/services/user/user-service";
 import AddUserDialog from "./dialogs/add-user-dialog";
-import {
-  closeModalAction,
-  ModalType,
-  UserDialogProvider,
-  useUserDialogDispatch,
-  useUserDialogState,
-} from "./dialogs/user-dialog-context";
-import EditUserDialog from "./dialogs/edit-user-dialog";
-import DeleteUserDialog from "./dialogs/delete-user-dialog";
+import { UserDialogProvider } from "./dialogs/user-dialog-context";
+import { usePathname } from "next/navigation";
+import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getErrorMessage } from "@/utils/get-error-message";
+import { sleep } from "@/utils/sleep";
 
 export function UsersDataTable({ initialData }: { initialData: User[] }) {
-  const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const pathname = usePathname();
 
-  const { data } = useQuery({
-    queryKey: usersQueryKeys.list(),
+  const { data, isLoading, status, isFetching } = useQuery({
+    queryKey: pathname.includes("users-error")
+      ? usersQueryKeys.error()
+      : usersQueryKeys.list(),
     queryFn: async () => {
       try {
+        if (pathname.includes("users-error")) {
+          await sleep(5000); // Simula um atraso de 2 segundos
+          throw new Error("Erro ao buscar usuários");
+        }
         const response = await getAllUsers();
-        return response.data; // Assuming the API returns an array of users
+        return response.data;
       } catch (error) {
-        // vou voltar aqui para tratar o erro
-        throw error;
+        toast.error(getErrorMessage(error));
+        return [];
       }
     },
     initialData: initialData,
+    staleTime: initialData.length > 0 ? 1000 : 0,
   });
+
+  console.log(status)
 
   const table = useReactTable({
     data: data || [],
     columns: usersTableColumns,
-    onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 5,
+      },
+    },
     state: {
-      sorting,
       columnFilters,
     },
   });
+
+  const rows = table.getRowModel().rows;
+  const emptyRows = table.getState().pagination.pageSize - rows.length;
 
   return (
     <div className="w-full">
@@ -111,36 +122,55 @@ export function UsersDataTable({ initialData }: { initialData: User[] }) {
 
           {/* Corpo da tabela */}
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => {
-                    if (cell.id.includes("actions")) {
-                      return (
-                        <UserDialogProvider key={cell.id}>
-                          <TableCell>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
-                        </UserDialogProvider>
-                      );
-                    }
-                    return (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    );
-                  })}
+            {data.length === 0 && isFetching ? (
+              Array.from({ length: 10 }).map((_, i) => (
+                <TableRow key={`skeleton-${i}`}>
+                  {usersTableColumns.map((_, j) => (
+                    <TableCell key={j}>
+                      <Skeleton className="h-4 w-full" />
+                    </TableCell>
+                  ))}
                 </TableRow>
               ))
+            ) : table.getRowModel().rows?.length ? (
+              <>
+                {table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => {
+                      if (cell.id.includes("actions")) {
+                        return (
+                          <UserDialogProvider key={cell.id}>
+                            <TableCell>
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </TableCell>
+                          </UserDialogProvider>
+                        );
+                      }
+                      return (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+                {Array.from({ length: emptyRows }).map((_, i) => (
+                  <TableRow key={`empty-${i}`} className="opacity-0">
+                    {usersTableColumns.map((_, j) => (
+                      <TableCell key={j}>-</TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </>
             ) : (
               <TableRow>
                 <TableCell
@@ -155,27 +185,8 @@ export function UsersDataTable({ initialData }: { initialData: User[] }) {
         </Table>
       </div>
 
-      {/* Paginação */}
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Voltar
-          </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Próximo
-          </Button>
-        </div>
+      <div className="flex items-center justify-center py-5">
+        <TablePagination table={table} />
       </div>
     </div>
   );
