@@ -5,6 +5,11 @@
 Um simples crud de usuário, com listagem e filtragem por nome.
 Pra conferir o projeto rodando na vercel, basta clicar [aqui](https://front-end-technical-test-july-2025-wine.vercel.app/)
 
+## Videos de explicação
+Eu fiz dois vídeos explicando sobre a aplicação, um deles utilizando a aplicação e o outro falando sobre a codebase, antes de tudo peço perdão pelo eco.
+Video sobre a codebase: https://drive.google.com/file/d/1dwfC48ORE9VXlg9C5kyoqIah9w4guc-1/view?usp=sharing. disclaimer: é um vídeo longo, onde eu exploro um pouco como eu organizei o projeto
+Vídeo sobre a aplicação: https://drive.google.com/file/d/1dzZO0e6nyfqxjJrKfrOTAl7Ux-E48Zhy/view?usp=sharing. 
+
 ## 🚀 Tecnologias Utilizadas
 
 - **Next.js 15** - Framework React com App Router
